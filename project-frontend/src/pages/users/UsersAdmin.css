@@ -1,0 +1,27 @@
+.make-change{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    width: 420px;
+    height: 59px;
+    color: #fff;
+    background:  rgb(30, 62, 98);
+    box-shadow: 0 0 20px rgba(0, 7, 71, 0.563);
+    border-radius: 6px;
+    font-size: 21px;
+    font-weight: 700;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+
+  .make-change:hover{
+    background:  #061a30;
+  }
+
+  .dropdown-container {
+    display: flex;
+    justify-content: center; /* Centers the dropdown horizontally */
+    align-items: center; /* Centers the dropdown vertically if the container has a height */
+
+  }

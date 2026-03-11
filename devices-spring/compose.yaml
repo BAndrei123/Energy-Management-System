@@ -1,0 +1,56 @@
+
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: 'devices-db'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+    ports:
+      - '5433:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - project1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: 'guest'
+      RABBITMQ_DEFAULT_PASS: 'guest'
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - '5673:5672'   # Different port since it's a different container
+      - '15673:15672' # RabbitMQ management plugin for device service
+    networks:
+      - project1
+  devices-spring:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_IP=db               # Hostname of the PostgreSQL service
+      - DB_PORT=5432          # PostgreSQL port
+      - DB_DBNAME=devices-db      # Database name
+      - DB_USERNAME=root       # Database user
+      - DB_PASSWORD=root       # Database password
+      - SPRING_RABBITMQ_HOST=rabbitmq # Hostname of RabbitMQ
+      - SPRING_RABBITMQ_PORT=5672     # RabbitMQ port
+    networks:
+      - project1
+
+
+
+volumes:
+  db_data:
+
+
+networks:
+  project1:
+    driver: bridge

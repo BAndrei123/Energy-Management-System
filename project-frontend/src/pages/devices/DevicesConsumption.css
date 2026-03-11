@@ -1,0 +1,27 @@
+
+
+.dropdown-consumption-years {
+    
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; /* Centers the dropdown horizontally */
+    align-items: center; /* Centers the dropdown vertically if the container has a height */
+    z-index: -1;
+  }
+
+  .dropdown-consumption-consumption {
+    
+    margin-top: 30px;
+    display: flex;
+    justify-content: center; /* Centers the dropdown horizontally */
+    align-items: center; /* Centers the dropdown vertically if the container has a height */
+    
+  }
+
+  .chart-container {
+    width: 80%; /* Adjust width to your preference */
+    max-width: 1200px; /* Set a maximum width for responsiveness */
+    height: 1000px; /* Control height */
+    margin: 0 auto; /* Center the chart horizontally */
+    overflow: hidden; /* Prevent overflow if the chart is too large */
+}

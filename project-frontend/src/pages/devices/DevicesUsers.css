@@ -1,0 +1,25 @@
+.user-devices-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.user-devices-page-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.user-devices-page-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+.user-devices-button.disabled {
+    background: #d3d3d3;
+    cursor: not-allowed;
+}

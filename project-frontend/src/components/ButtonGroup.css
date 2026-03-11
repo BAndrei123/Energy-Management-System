@@ -1,0 +1,38 @@
+
+.buttons{
+    column-gap: 40px;
+}
+
+.button-container {
+    
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    margin: 60px auto;
+    justify-content: center;
+    height: 50px;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #fff;
+    background:  rgb(30, 62, 98);
+    box-shadow: 0 0 10px rgba(0, 7, 71, 0.563);
+    border-radius: 50px;
+    font-size: 21px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #061a30;
+}
+
+.gray {
+    background-color: gray;
+    cursor: pointer;
+}

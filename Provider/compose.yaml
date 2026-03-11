@@ -1,0 +1,16 @@
+
+
+
+services:
+  rabbitmq:
+      image: rabbitmq:3-management
+      restart: always
+      container_name: rabbitmq-provider
+      environment:
+        RABBITMQ_DEFAULT_USER: 'guest'
+        RABBITMQ_DEFAULT_PASS: 'guest'
+        RABBITMQ_DEFAULT_VHOST: /
+      ports:
+        - '5673:5672'   # Default RabbitMQ port
+        - '15673:15672' # RabbitMQ management plugin
+

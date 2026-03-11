@@ -1,0 +1,186 @@
+
+
+services:
+
+  reverse-proxy:
+    image: traefik:v3.2
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --log.level=DEBUG
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - traefik_logs:/var/log/traefik
+    networks:
+      - project1
+      
+  db-user:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: 'user-db'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+    ports:
+      - '5432:5432'  # Expose port for user database
+    volumes:
+      - user-db-data:/var/lib/postgresql/data  # Unique volume for db-user
+    networks:
+      - project1
+
+  db-devices:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: 'devices-db'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+    ports:
+      - '5433:5432'  # Expose port for devices database
+    volumes:
+      - devices-db-data:/var/lib/postgresql/data  # Unique volume for db-devices
+    networks:
+      - project1
+
+  db-monitoring:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: 'monitoring-db'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+    ports:
+      - '5434:5432'
+    volumes:
+      - monitoring-db-data:/var/lib/postgresql/data  # Unique volume for db-monitoring
+    networks:
+      - project1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: 'guest'
+      RABBITMQ_DEFAULT_PASS: 'guest'
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - '5672:5672'   # Default RabbitMQ port
+      - '15672:15672' # RabbitMQ management plugin
+    networks:
+      - project1
+  
+  rabbitmq-provider:
+      image: rabbitmq:3-management
+      restart: always
+      container_name: rabbitmq-provider
+      environment:
+        RABBITMQ_DEFAULT_USER: 'guest'
+        RABBITMQ_DEFAULT_PASS: 'guest'
+        RABBITMQ_DEFAULT_VHOST: /
+      ports:
+        - '5673:5672'   # Default RabbitMQ port
+        - '15673:15672' # RabbitMQ management plugin
+      networks:
+      - project1
+  
+
+      
+  user-spring:
+    build:
+      context: ./user-spring  # Make sure your Dockerfile is in the root of your project
+      dockerfile: ./Dockerfile
+    # ports:
+    #   - "8080:8080"
+    # deploy:
+    #   replicas: 4
+    environment:
+      - DB_IP=db-user          # Hostname of the PostgreSQL user database service
+      - DB_PORT=5432           # PostgreSQL port for user service
+      - DB_DBNAME=user-db      # Database name for user service
+      - DB_USERNAME=root       # Database user for user service
+      - DB_PASSWORD=root       # Database password for user service
+      - SPRING_RABBITMQ_HOST=rabbitmq # Hostname of RabbitMQ
+      - SPRING_RABBITMQ_PORT=5672     # RabbitMQ port
+    networks:
+      - project1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-spring.rule=Host(`user-spring.localhost`)"
+      - "traefik.http.services.user-spring.loadbalancer.server.port=8081"
+
+  devices-spring:
+    build:
+      context: ./devices-spring  # Make sure your Dockerfile is in the root of your project
+      dockerfile: ./Dockerfile
+    # ports:
+    #   - "8081:8081"
+    # deploy:
+    #   replicas: 4
+    environment:
+      - DB_IP=db-devices       # Hostname of the PostgreSQL devices database service
+      - DB_PORT=5432           # PostgreSQL port for devices service
+      - DB_DBNAME=devices-db   # Database name for devices service
+      - DB_USERNAME=root       # Database user for devices service
+      - DB_PASSWORD=root       # Database password for devices service
+      - SPRING_RABBITMQ_HOST=rabbitmq # Hostname of RabbitMQ
+      - SPRING_RABBITMQ_PORT=5672     # RabbitMQ port
+      
+    networks:
+      - project1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.devices-spring.rule=Host(`devices-spring.localhost`)"
+      - "traefik.http.services.devices-spring.loadbalancer.server.port=8082"
+  
+  monitoring-spring:
+    build:
+      context: ./monitoring-spring
+      dockerfile: ./Dockerfile
+    # ports:
+    #   - "8082:8082"
+
+    environment:
+      - DB_IP=db-monitoring
+      - DB_PORT=5432  
+      - DB_DBNAME=monitoring-db
+      - DB_USERNAME=root       
+      - DB_PASSWORD=root
+      - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
+      - SPRING_RABBITMQ_HOST=rabbitmq # Hostname of RabbitMQ
+      - SPRING_RABBITMQ_PORT=5672   
+      # - SPRING_RABBITMQ_HOST=rabbitmq-provider # Hostname of RabbitMQ
+      # - SPRING_RABBITMQ_PORT=5672   
+    networks:
+      - project1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.monitoring-spring.rule=Host(`monitoring-spring.localhost`)"
+      - "traefik.http.services.monitoring-spring.loadbalancer.server.port=8083"
+  
+  chat-spring:
+    build:
+      context: ./chat-spring
+      dockerfile: ./Dockerfile
+    networks:
+      - project1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chat-spring.rule=Host(`chat-spring.localhost`)"
+      - "traefik.http.services.chat-spring.loadbalancer.server.port=8084"
+
+volumes:
+  user-db-data:       # Dedicated volume for db-user
+  devices-db-data:    # Dedicated volume for db-devices
+  monitoring-db-data: # Dedicated volume for db-monitoring
+  traefik_logs:
+
+networks:
+  project1:
+    driver: bridge

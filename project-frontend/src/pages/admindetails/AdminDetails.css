@@ -1,0 +1,69 @@
+.admin-details-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-family: formula1-bold;
+    color: #333;
+}
+
+.underline {
+    width: 61px;
+    height: 6px;
+    background: rgb(50, 50, 50);
+    border-radius: 9px;
+}
+
+.admin-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-family: formula1-regular;
+}
+
+.admin-detail strong {
+    color: #333;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px 0;
+    width: 150px;
+    font-family: formula1-regular;
+}
+
+
+
+.logout-button {
+    background-color: #333;
+}
+
+.logout-button:hover {
+    background-color: #555;
+}
