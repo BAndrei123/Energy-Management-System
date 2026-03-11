@@ -1,5 +1,7 @@
 # EMS
 
+For more detailed info, check the EMS-small-documentation.pdf file.
+
 ## Getting started
 
 To make it easy for you to get started with GitHub, here's a list of recommended next steps.
